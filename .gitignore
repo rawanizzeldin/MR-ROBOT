@@ -1,0 +1,13 @@
+node_modules/
+
+# env files
+backend/.env
+.env
+
+# sqlite db files
+*.sqlite
+*.sqlite-journal
+
+# logs
+*.log
+
