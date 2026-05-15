@@ -67,7 +67,7 @@ router.put("/items/:productId", requireAuth, async (req, res) => {
     const item = await Cart.findOneAndUpdate(
       { user_id: userId, product_id: req.params.productId },
       { quantity },
-      { new: true }
+      { returnDocument: 'after' } // Use returnDocument: 'after'
     );
 
     if (!item) return res.status(404).json({ error: "Item not found" });

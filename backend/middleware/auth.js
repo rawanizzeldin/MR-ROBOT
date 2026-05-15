@@ -7,7 +7,7 @@ function requireAuth(req, res, next) {
   if (!token) return res.status(401).json({ error: "Please log in first" });
 
   try {
-   req.user = jwt.verify(token, process.env.JWT_SECRET || "your_fallback_secret");
+   req.user = jwt.verify(token, process.env.JWT_SECRET );
     next();
   } catch {
     res.status(401).json({ error: "Session expired, login again" });

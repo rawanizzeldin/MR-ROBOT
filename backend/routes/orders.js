@@ -1,5 +1,5 @@
 const express = require("express");
-const { Order, User, Cart } = require("../db");
+const { Order, User, Cart, Product } = require("../db");
 const { requireAuth, requireAdmin } = require("../middleware/auth");
 
 const router = express.Router();
@@ -76,15 +76,32 @@ router.post("/", requireAuth, async (req, res) => {
       return sum + price * item.quantity;
     }, 0);
 
+    // Logistics & Calculation: Add 10% tax
+    const taxRate = 0.1;
+    const taxAmount = total * taxRate;
+    const finalTotal = total + taxAmount;
+
+    // Asset Optimization: Decrement stock for each item
+    for (const item of cartItems) {
+      const product = await Product.findById(item.product_id._id);
+      if (product) {
+        if (product.stock < item.quantity) {
+          return res.status(400).json({ error: `Not enough stock for ${product.name}` });
+        }
+        product.stock -= item.quantity;
+        await product.save();
+      }
+    }
+
     const newOrder = await Order.create({
       userId, // OK (Order schema)
       items: cartItems.map(i => ({
         productId: i.product_id._id,
         name: i.product_id.name,
         quantity: i.quantity,
-        lineTotal: (i.product_id.price || 0) * i.quantity
+        lineTotal: (i.product_id.price || 0) * i.quantity 
       })),
-      total,
+      total: finalTotal,
       status: "Completed"
     });
 
@@ -105,7 +122,7 @@ router.put("/:id/status", requireAuth, requireAdmin, async (req, res) => {
     const order = await Order.findByIdAndUpdate(
       req.params.id,
       { status },
-      { new: true }
+      { returnDocument: 'after' } // Use returnDocument: 'after'
     );
     if (!order) return res.status(404).json({ error: "Order not found" });
     res.json(order);

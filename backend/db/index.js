@@ -37,10 +37,19 @@ const OrderSchema = new mongoose.Schema({
   }],
 }, { timestamps: true });
 
+const ReviewSchema = new mongoose.Schema({
+  productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
+  userId:    { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  username:  String,
+  rating:    { type: Number, min: 1, max: 5, required: true },
+  comment:   { type: String, required: true },
+}, { timestamps: true });
+
 // --- 2. MODELS & EXPORTS ---
 module.exports = {
   User:    mongoose.models.User    || mongoose.model('User',    UserSchema),
   Product: mongoose.models.Product || mongoose.model('Product', ProductSchema),
   Cart:    mongoose.models.Cart    || mongoose.model('Cart',    CartSchema),
   Order:   mongoose.models.Order   || mongoose.model('Order',   OrderSchema),
+  Review:  mongoose.models.Review  || mongoose.model('Review',  ReviewSchema),
 };

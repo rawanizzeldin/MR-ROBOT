@@ -17,7 +17,9 @@ app.use(cors({
 app.use(express.json());
 
 // Database Connection
-const dbURI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/ElectronicDevicesDB';
+// Serve static files from the 'uploads' directory
+app.use('/uploads', express.static('uploads'));
+const dbURI = process.env.MONGO_URI;
 mongoose.connect(dbURI)
   .then(() => console.log('MongoDB Connected...'))
   .catch(err => console.log('Database Error:', err));
