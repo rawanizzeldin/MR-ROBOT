@@ -5,6 +5,17 @@ const { requireAuth, requireAdmin } = require("../middleware/auth");
 const router = express.Router();
 const upload = require("../middleware/upload");
 // 1. Get all products (Public)
+/**
+ * @swagger
+ * /api/products:
+ *   get:
+ *     summary: Get all products
+ *     tags: [Products]
+ *     parameters:
+ *       - in: query
+ *         name: category
+ *         schema: { type: string }
+ */
 router.get("/", async (req, res) => {
   try {
     const filter = {};
@@ -31,6 +42,16 @@ router.get("/", async (req, res) => {
 });
 
 // 2. Get single product (Public)
+/**
+ * @swagger
+ * /api/products/{id}:
+ *   get:
+ *     summary: Get product by ID
+ *     tags: [Products]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ */
 router.get("/:id", async (req, res) => {
   try {
     const p = await Product.findById(req.params.id);
@@ -49,6 +70,25 @@ router.get("/:id", async (req, res) => {
 });
 
 // 3. Add product (Admin only)
+/**
+ * @swagger
+ * /api/products:
+ *   post:
+ *     summary: Add product (Admin)
+ *     tags: [Products]
+ *     requestBody:
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name: { type: string }
+ *               description: { type: string }
+ *               price: { type: number }
+ *               category: { type: string }
+ *               stock: { type: number }
+ *               image: { type: string, format: binary }
+ */
 router.post("/", requireAuth, requireAdmin, upload.single("image"), async (req, res) => {
   const { name, description, price, category, stock } = req.body;
 

@@ -5,6 +5,13 @@ const { requireAuth } = require("../middleware/auth");
 const router = express.Router();
 
 // 1. View Cart
+/**
+ * @swagger
+ * /api/cart:
+ *   get:
+ *     summary: View current user cart
+ *     tags: [Cart]
+ */
 router.get("/", requireAuth, async (req, res) => {
   try {
     // Find items using user_id (matching your schema)
@@ -36,6 +43,13 @@ router.get("/", requireAuth, async (req, res) => {
 });
 
 // 2. Add item to cart
+/**
+ * @swagger
+ * /api/cart/items:
+ *   post:
+ *     summary: Add item to cart
+ *     tags: [Cart]
+ */
 router.post("/items", requireAuth, async (req, res) => {
   const { productId, quantity } = req.body;
 

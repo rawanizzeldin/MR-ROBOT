@@ -3,11 +3,29 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const swaggerJsDoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
 
 const app = express();
 const cookieParser = require("cookie-parser");
 
 app.use(cookieParser());
+
+const swaggerOptions = {
+  swaggerDefinition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'MR.ROBOT E-commerce API',
+      version: '1.0.0',
+      description: 'API documentation for the tech store backend',
+    },
+    servers: [{ url: 'http://localhost:5000' }],
+  },
+  apis: ['./routes/*.js'],
+};
+const swaggerDocs = swaggerJsDoc(swaggerOptions);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+
 // Middlewares
 // server.js — replace app.use(cors()) with:
 app.use(cors({
