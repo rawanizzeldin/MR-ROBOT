@@ -20,7 +20,7 @@ router.get("/", requireAuth, async (req, res) => {
         name:      p.name,
         price:     p.price,
         // Updated to p.image to match your Product collection key
-        imageUrl:  p.image, 
+        image:  p.image, 
         quantity:  item.quantity,
         total:     p.price * item.quantity
       };

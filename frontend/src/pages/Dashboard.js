@@ -12,18 +12,14 @@ export default function Dashboard() {
     const fetchOrders = async () => {
       try {
         const res = await api.get("/orders");
-
-        // Backend already returns an array
         const data = Array.isArray(res.data) ? res.data : [];
         setOrders(data);
-
       } catch (err) {
         console.error("Fetch orders error:", err?.response?.data || err.message);
       } finally {
         setLoading(false);
       }
     };
-
     fetchOrders();
   }, []);
 
@@ -37,7 +33,6 @@ export default function Dashboard() {
 
   return (
     <div className="container mt-4">
-
       <div className="card p-4 mb-4 text-center border-0 shadow-sm">
         <h2>Welcome, {user?.username || "Valued Customer"}! 👋</h2>
         <p className="text-muted">
@@ -74,22 +69,17 @@ export default function Dashboard() {
                   <th>Status</th>
                 </tr>
               </thead>
-
               <tbody>
                 {orders.map((order) => {
                   const total = Number(order.total ?? 0);
-
-
                   return (
                     <tr key={order._id}>
                       <td className="text-muted">
-                        #{order._id.substring(0, 8)}...
+                        #{order._id ? order._id.substring(0, 8) : "N/A"}...
                       </td>
-
                       <td className="fw-bold">
                         ${total.toFixed(2)}
                       </td>
-
                       <td>
                         <span
                           className={`badge ${
@@ -105,7 +95,6 @@ export default function Dashboard() {
                   );
                 })}
               </tbody>
-
             </table>
           </div>
         )}

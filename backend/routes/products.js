@@ -3,7 +3,7 @@ const { Product } = require("../db");
 const { requireAuth, requireAdmin } = require("../middleware/auth");
 
 const router = express.Router();
-
+const upload = require("../middleware/upload");
 // 1. Get all products (Public)
 router.get("/", async (req, res) => {
   try {
@@ -21,7 +21,7 @@ router.get("/", async (req, res) => {
       price:       p.price,
       category:    p.category,
       stock:       p.stock,
-      imageUrl:    p.image // Matches your db.js schema
+      image:    p.image // Matches your db.js schema
     }));
     
     res.json(result);
@@ -41,7 +41,7 @@ router.get("/:id", async (req, res) => {
       name:        p.name,
       description: p.description,
       price:       p.price,
-      imageUrl:    p.image
+      image:    p.image
     });
   } catch (err) {
     res.status(404).json({ error: "Invalid product ID" });
@@ -49,10 +49,9 @@ router.get("/:id", async (req, res) => {
 });
 
 // 3. Add product (Admin only)
-router.post("/", requireAuth, requireAdmin, async (req, res) => {
-  const { name, description, price, category, stock, imageUrl } = req.body;
+router.post("/", requireAuth, requireAdmin, upload.single("image"), async (req, res) => {
+  const { name, description, price, category, stock } = req.body;
 
-  // Simple student-style validation
   if (!name || !price) {
     return res.status(400).json({ error: "Name and price are required" });
   }
@@ -64,7 +63,7 @@ router.post("/", requireAuth, requireAdmin, async (req, res) => {
       price,
       category,
       stock,
-      image: imageUrl // Matches your db.js schema
+      image: req.file ? req.file.path : null  // Cloudinary gives you the URL in req.file.path
     });
     res.status(201).json({ id: product._id, message: "Product created!" });
   } catch (err) {

@@ -105,8 +105,8 @@ function Cart() {
                       <tr key={item.productId || index}>
                         <td>
                           <div className="d-flex align-items-center">
-                            {item.imageUrl && (
-                              <img src={item.imageUrl} alt={item.name} style={{ width: '50px', marginRight: '10px' }} />
+                            {item.image && (
+                              <img src={item.image} alt={item.name} style={{ width: '50px', marginRight: '10px' }} />
                             )}
                             <div>
                               <h6 className="mb-0 fw-bold">{item.name}</h6>

@@ -11,7 +11,6 @@ function Products() {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   
-  // Requirement: Handling Query Parameters (URL Search Params)
   const [searchParams, setSearchParams] = useSearchParams();
   const activeCategory = searchParams.get("category") || "All";
 
@@ -19,9 +18,10 @@ function Products() {
     const fetchProducts = async () => {
       setLoading(true);
       try {
-        // Build the URL based on the selected category
         const url = activeCategory === "All" ? "/products" : `/products?category=${activeCategory}`;
         const res = await api.get(url);
+        // We log this to verify the structure in the console
+        console.log("Fetched Products:", res.data); 
         setProducts(res.data);
       } catch (err) {
         setProducts([]);
@@ -38,7 +38,8 @@ function Products() {
       return;
     }
     try {
-      await api.post("/cart/items", { productId: product.id, quantity: 1 });
+      // Changed to _id to match MongoDB
+      await api.post("/cart/items", { productId: product._id, quantity: 1 });
       alert("Added to cart!");
     } catch (err) {
       alert("Failed to add to cart.");
@@ -52,7 +53,6 @@ function Products() {
         <span className="text-muted">{products.length} Items Found</span>
       </div>
 
-      {/* Requirement: Category Filtering (User Interaction) */}
       <div className="mb-4">
         {CATEGORIES.map((cat) => (
           <button
@@ -74,16 +74,20 @@ function Products() {
       {loading ? (
         <p>Loading products...</p>
       ) : (
-        /* Requirement: Responsive Grid Layout */
         <div className="row g-4">
           {products.map((p) => (
-            <div key={p.id} className="col-12 col-md-6 col-lg-4">
+            <div key={p._id} className="col-12 col-md-6 col-lg-4">
               <div className="card h-100 shadow-sm">
                 <img 
-                  src={p.image || "https://via.placeholder.com/150"} 
+                  // This matches the 'image' field in your MongoDB screenshot
+                  src={p.image} 
                   className="card-img-top" 
                   alt={p.name} 
                   style={{ height: "200px", objectFit: "cover" }}
+                  onError={(e) => {
+                    // If the Cloudinary URL fails, this shows a placeholder
+                    e.target.src = "https://via.placeholder.com/150?text=Image+Not+Found";
+                  }}
                 />
                 <div className="card-body d-flex flex-column">
                   <h5 className="card-title">{p.name}</h5>
